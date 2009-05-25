@@ -17,7 +17,7 @@ def time_hack():
         return datetime.datetime(*timetuple[:6])
     time.strftime = hacked_strftime
 
-def fetch_bugs(emails):
+def fetch_bugs(requests):
     basename, ext = os.path.splitext(__file__)
     stamp_filename = '%s.stamp' % basename
     try:
@@ -29,10 +29,13 @@ def fetch_bugs(emails):
         else:
             raise
     bugs = set()
-    for key in 'maint', 'submitter', 'owner', 'correspondent':
-        for email in emails:
-            bugs_chunk = debianbts.get_bugs(key, email)
-            bugs.update(bugs_chunk)
+    for request in requests:
+        try:
+            bugs.add(int(request, 10))
+        except ValueError:
+            for key in 'maint', 'submitter', 'owner', 'correspondent':
+                bugs_chunk = debianbts.get_bugs(key, request)
+                bugs.update(bugs_chunk)
     bugs = debianbts.get_status(*bugs)
     bugs.sort(key = lambda bug: bug.lastaction, reverse=True)
     new_stamp = {}
@@ -51,7 +54,7 @@ def fetch_bugs(emails):
 
 def main():
     if len(sys.argv) < 2:
-        print >>sys.stderr, 'Usage: %s <email>...\n' % sys.argv[0]
+        print >>sys.stderr, 'Usage: %s <request>...\n' % sys.argv[0]
         sys.exit(1)
     fetch_bugs(sys.argv[1:])
 
