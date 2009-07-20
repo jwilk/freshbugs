@@ -16,7 +16,7 @@ class file_lock(object):
         self._filename = filename
 
     def __enter__(self):
-        self._fd = os.open(self._filename + '.lock', os.O_CREAT | os.O_RDWR | os.O_TRUNC)
+        self._fd = os.open(self._filename + '.lock', os.O_CREAT | os.O_RDWR | os.O_TRUNC, 0666)
         fcntl.flock(self._fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
 
     def __exit__(self, ex_type, ex_value, ex_traceback):
