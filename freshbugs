@@ -56,8 +56,9 @@ def fetch_bugs(requests):
                 print 'Date: %s' % bug.lastaction
                 print 'Location: http://bugs.debian.org/%d' % no
                 print
-        with open(stamp_filename, 'wb') as stamp_file:
+        with open(stamp_filename + '~', 'wb') as stamp_file:
             pickle.dump(new_stamp, stamp_file, protocol=-1)
+        os.rename(stamp_filename + '~', stamp_filename)
 
 def main():
     if len(sys.argv) < 2:
