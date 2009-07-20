@@ -11,13 +11,6 @@ import cPickle as pickle
 
 import debianbts
 
-def time_hack():
-    # Dirty hack to fix <http://bugs.debian.org/529488>
-    import time
-    def hacked_strftime(format, timetuple):
-        return datetime.datetime(*timetuple[:6])
-    time.strftime = hacked_strftime
-
 class file_lock(object):
     def __init__(self, filename):
         self._filename = filename
@@ -72,7 +65,6 @@ def main():
     fetch_bugs(sys.argv[1:])
 
 if __name__ == '__main__':
-    time_hack()
     main()
 
 # vim:ts=4 sw=4 et
