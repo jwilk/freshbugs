@@ -5,11 +5,14 @@ from __future__ import with_statement
 import datetime
 import errno
 import fcntl
+import locale
 import os
 import sys
 import cPickle as pickle
 
 import debianbts
+
+encoding = locale.getpreferredencoding()
 
 class file_lock(object):
     def __init__(self, filename):
@@ -52,7 +55,7 @@ def fetch_bugs(requests):
             new_stamp[no] = bug.lastaction
             if bug.lastaction > stamp.get(no, ancient_timestamp):
                 print 'Package: %s' % bug.package
-                print 'Subject: %s' % bug.summary
+                print 'Subject: %s' % bug.summary.encode(encoding, 'replace')
                 print 'Date: %s' % bug.lastaction
                 print 'Location: http://bugs.debian.org/%d' % no
                 print
