@@ -10,6 +10,7 @@ import os
 import sys
 import cPickle as pickle
 
+from xdg import BaseDirectory as xdg
 import debianbts
 
 encoding = locale.getpreferredencoding()
@@ -28,7 +29,8 @@ class file_lock(object):
 
 def fetch_bugs(requests):
     basename, ext = os.path.splitext(__file__)
-    stamp_filename = '%s.stamp' % basename
+    os.chdir(xdg.save_data_path('freshbugs'))
+    stamp_filename = 'freshbugs.stamp'
     with file_lock(stamp_filename):
         try:
             with open(stamp_filename, 'rb') as stamp_file:
