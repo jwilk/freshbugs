@@ -6,6 +6,7 @@ import datetime
 import errno
 import fcntl
 import locale
+import optparse
 import os
 import re
 import sys
@@ -31,7 +32,7 @@ class file_lock(object):
 def get_email():
     return os.getenv('REPORTBUGEMAIL') or os.getenv('EMAIL') or os.getenv('DEBEMAIL')
 
-def fetch_bugs(requests):
+def fetch_bugs(requests, options):
     email = get_email()
     basename, ext = os.path.splitext(__file__)
     os.chdir(xdg.save_data_path('freshbugs'))
@@ -73,15 +74,27 @@ def fetch_bugs(requests):
                 print 'Date: %s' % bug.log_modified
                 print 'Location: http://bugs.debian.org/%d' % no
                 print
+        if options.dry_run:
+            return
+        if not options.clean:
+            merged_stamp = dict(stamp)
+            merged_stamp.update(new_stamp)
+            new_stamp = merged_stamp
         with open(stamp_filename + '~', 'wb') as stamp_file:
             pickle.dump(new_stamp, stamp_file, protocol=-1)
         os.rename(stamp_filename + '~', stamp_filename)
 
+class OptionParser(optparse.OptionParser):
+    def __init__(self):
+        usage = '%prog [options] <request>...'
+        optparse.OptionParser.__init__(self, usage=usage)
+        self.add_option('--dry-run', dest='dry_run', action='store_true')
+        self.add_option('--clean', dest='clean', action='store_true')
+
 def main():
-    if len(sys.argv) < 2:
-        print >>sys.stderr, 'Usage: %s <request>...\n' % sys.argv[0]
-        sys.exit(1)
-    fetch_bugs(sys.argv[1:])
+    option_parser = OptionParser()
+    options, arguments = option_parser.parse_args()
+    fetch_bugs(arguments, options)
 
 if __name__ == '__main__':
     main()
