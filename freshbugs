@@ -54,23 +54,23 @@ def fetch_bugs(requests):
                     bugs_chunk = debianbts.get_bugs(key, request)
                     bugs.update(bugs_chunk)
         bugs = debianbts.get_status(*bugs)
-        bugs.sort(key = lambda bug: bug.lastaction, reverse=True)
+        bugs.sort(key = lambda bug: bug.log_modified, reverse=True)
         new_stamp = {}
         ancient_timestamp = datetime.datetime(1900, 1, 1)
         for bug in bugs:
-            no = int(bug.nr)
-            new_stamp[no] = bug.lastaction
-            if bug.lastaction > stamp.get(no, ancient_timestamp):
+            no = int(bug.id)
+            new_stamp[no] = bug.log_modified
+            if bug.log_modified > stamp.get(no, ancient_timestamp):
                 print 'Package: %s' % bug.package
-                if bug.submitter is not None:
-                    submitter_email = bug.submitter
+                if bug.originator is not None:
+                    submitter_email = bug.originator
                     match = re.search('<(.*)>', submitter_email)
                     if match is not None:
                         submitter_email = match.group(1)
                     if submitter_email != email:
-                        print 'Submitter: %s' % bug.submitter.encode(encoding, 'replace')
-                print 'Subject: %s' % bug.summary.encode(encoding, 'replace')
-                print 'Date: %s' % bug.lastaction
+                        print 'Submitter: %s' % bug.originator.encode(encoding, 'replace')
+                print 'Subject: %s' % bug.subject.encode(encoding, 'replace')
+                print 'Date: %s' % bug.log_modified
                 print 'Location: http://bugs.debian.org/%d' % no
                 print
         with open(stamp_filename + '~', 'wb') as stamp_file:
