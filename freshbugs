@@ -7,6 +7,7 @@ import errno
 import fcntl
 import locale
 import os
+import re
 import sys
 import cPickle as pickle
 
@@ -27,7 +28,11 @@ class file_lock(object):
         os.unlink(self._filename)
         os.close(self._fd)
 
+def get_email():
+    return os.getenv('REPORTBUGEMAIL') or os.getenv('EMAIL') or os.getenv('DEBEMAIL')
+
 def fetch_bugs(requests):
+    email = get_email()
     basename, ext = os.path.splitext(__file__)
     os.chdir(xdg.save_data_path('freshbugs'))
     stamp_filename = 'freshbugs.stamp'
@@ -57,6 +62,13 @@ def fetch_bugs(requests):
             new_stamp[no] = bug.lastaction
             if bug.lastaction > stamp.get(no, ancient_timestamp):
                 print 'Package: %s' % bug.package
+                if bug.submitter is not None:
+                    submitter_email = bug.submitter
+                    match = re.search('<(.*)>', submitter_email)
+                    if match is not None:
+                        submitter_email = match.group(1)
+                    if submitter_email != email:
+                        print 'Submitter: %s' % bug.submitter.encode(encoding, 'replace')
                 print 'Subject: %s' % bug.summary.encode(encoding, 'replace')
                 print 'Date: %s' % bug.lastaction
                 print 'Location: http://bugs.debian.org/%d' % no
