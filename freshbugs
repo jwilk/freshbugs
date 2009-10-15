@@ -59,7 +59,7 @@ def fetch_bugs(requests, options):
         new_stamp = {}
         ancient_timestamp = datetime.datetime(1900, 1, 1)
         for bug in bugs:
-            no = int(bug.id)
+            no = int(bug.bug_num)
             new_stamp[no] = bug.log_modified
             if bug.log_modified > stamp.get(no, ancient_timestamp):
                 print 'Package: %s' % bug.package
