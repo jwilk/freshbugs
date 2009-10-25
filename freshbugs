@@ -15,6 +15,12 @@ import cPickle as pickle
 from xdg import BaseDirectory as xdg
 import debianbts
 
+try:
+    import elinks
+    encoding_error_handler = 'elinks'
+except ImportError:
+    encoding_error_handler = 'replace'
+
 encoding = locale.getpreferredencoding()
 
 class file_lock(object):
@@ -69,8 +75,8 @@ def fetch_bugs(requests, options):
                     if match is not None:
                         submitter_email = match.group(1)
                     if submitter_email != email:
-                        print 'Submitter: %s' % bug.originator.encode(encoding, 'replace')
-                print 'Subject: %s' % bug.subject.encode(encoding, 'replace')
+                        print 'Submitter: %s' % bug.originator.encode(encoding, encoding_error_handler)
+                print 'Subject: %s' % bug.subject.encode(encoding, encoding_error_handler)
                 print 'Date: %s' % bug.log_modified
                 print 'Location: http://bugs.debian.org/%d' % no
                 print
