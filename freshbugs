@@ -26,14 +26,29 @@ encoding = locale.getpreferredencoding()
 class file_lock(object):
     def __init__(self, filename):
         self._filename = filename + '.lock'
+        self._stale_filename = filename + '.stale-lock'
+        # *.stale-lock should appear in the filesystem only for a short period of time
 
     def __enter__(self):
-        self._fd = os.open(self._filename, os.O_CREAT | os.O_RDWR | os.O_TRUNC, 0666)
-        fcntl.flock(self._fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        stale_fd = os.open(self._stale_filename, os.O_CREAT | os.O_RDWR | os.O_EXCL, 0600)
+        try:
+            self._fd = os.open(self._filename, os.O_CREAT | os.O_RDWR | os.O_TRUNC, 0600)
+            fcntl.flock(self._fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        finally:
+            os.unlink(self._stale_filename)
+            os.close(stale_fd)
 
     def __exit__(self, ex_type, ex_value, ex_traceback):
-        os.unlink(self._filename)
-        os.close(self._fd)
+        stale_fd = os.open(self._stale_filename, os.O_CREAT | os.O_RDWR | os.O_EXCL, 0600)
+        try:
+            try:
+                os.unlink(self._filename)
+            except IOError:
+                pass
+            os.close(self._fd)
+        finally:
+            os.unlink(self._stale_filename)
+            os.close(stale_fd)
 
 def get_email():
     return os.getenv('REPORTBUGEMAIL') or os.getenv('EMAIL') or os.getenv('DEBEMAIL')
