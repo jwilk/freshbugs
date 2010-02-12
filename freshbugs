@@ -24,11 +24,11 @@
 
 from __future__ import with_statement
 
+import argparse
 import datetime
 import errno
 import fcntl
 import locale
-import optparse
 import os
 import re
 import sys
@@ -127,17 +127,16 @@ def fetch_bugs(requests, options):
             pickle.dump(new_stamp, stamp_file, protocol=-1)
         os.rename(stamp_filename + '~', stamp_filename)
 
-class OptionParser(optparse.OptionParser):
+class ArgumentParser(argparse.ArgumentParser):
     def __init__(self):
-        usage = '%prog [options] <request>...'
-        optparse.OptionParser.__init__(self, usage=usage)
-        self.add_option('--dry-run', dest='dry_run', action='store_true')
-        self.add_option('--clean', dest='clean', action='store_true')
+        argparse.ArgumentParser.__init__(self)
+        self.add_argument('--dry-run', action='store_true')
+        self.add_argument('--clean', action='store_true')
+        self.add_argument('request', metavar='<request>', nargs='+', help='either a bug number or an e-mail address')
 
 def main():
-    option_parser = OptionParser()
-    options, arguments = option_parser.parse_args()
-    fetch_bugs(arguments, options)
+    options = ArgumentParser().parse_args()
+    fetch_bugs(options.request, options)
 
 if __name__ == '__main__':
     main()
