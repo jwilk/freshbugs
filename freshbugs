@@ -130,8 +130,8 @@ def fetch_bugs(requests, options):
 class ArgumentParser(argparse.ArgumentParser):
     def __init__(self):
         argparse.ArgumentParser.__init__(self)
-        self.add_argument('--dry-run', action='store_true')
-        self.add_argument('--clean', action='store_true')
+        self.add_argument('--dry-run', action='store_true', help='make cache read-only')
+        self.add_argument('--clean', action='store_true', help='allow to remove old items from cache')
         self.add_argument('request', metavar='<request>', nargs='+', help='either a bug number or an e-mail address')
 
 def main():
