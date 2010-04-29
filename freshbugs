@@ -104,7 +104,7 @@ def fetch_bugs(requests, options):
         for bug in bugs:
             no = int(bug.bug_num)
             new_stamp[no] = bug.log_modified
-            if bug.log_modified > stamp.get(no, ancient_timestamp):
+            if options.all or bug.log_modified > stamp.get(no, ancient_timestamp):
                 print 'Package: %s' % bug.package
                 if bug.originator is not None:
                     submitter_email = bug.originator
@@ -132,6 +132,7 @@ class ArgumentParser(argparse.ArgumentParser):
         argparse.ArgumentParser.__init__(self)
         self.add_argument('--dry-run', action='store_true', help='make cache read-only')
         self.add_argument('--clean', action='store_true', help='allow to remove old items from cache')
+        self.add_argument('--all', action='store_true', help='print all selected bugs\' details')
         self.add_argument('request', metavar='<request>', nargs='+', help='either a bug number or an e-mail address')
 
 def main():
