@@ -31,7 +31,6 @@ import fcntl
 import locale
 import os
 import re
-import sys
 import cPickle as pickle
 
 from xdg import BaseDirectory as xdg
