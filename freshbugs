@@ -33,7 +33,6 @@ import os
 import re
 import cPickle as pickle
 
-from xdg import BaseDirectory as xdg
 import debianbts
 
 try:
@@ -43,6 +42,24 @@ except ImportError:
     encoding_error_handler = 'replace'
 
 encoding = locale.getpreferredencoding()
+
+class xdg(object):
+    '''
+    tiny replacement for PyXDG's xdg.BaseDirectory
+    '''
+    xdg_data_home = os.environ.get('XDG_DATA_HOME') or ''
+    if not os.path.isabs(xdg_data_home):
+        xdg_data_home = os.path.join(os.path.expanduser('~'), '.local', 'share')
+
+    @classmethod
+    def save_data_path(xdg, resource):
+        path = os.path.join(xdg.xdg_data_home, resource)
+        try:
+            os.makedirs(path, 0700)
+        except OSError:
+            if not os.path.isdir(path):
+                raise
+        return path
 
 class file_lock(object):
     def __init__(self, filename):
