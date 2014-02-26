@@ -131,7 +131,7 @@ def fetch_bugs(requests, options):
                         print 'Submitter: %s' % bug.originator.encode(encoding, encoding_error_handler)
                 print 'Subject: %s' % bug.subject.encode(encoding, encoding_error_handler)
                 print 'Date: %s' % bug.log_modified
-                print 'Location: http://bugs.debian.org/%d' % no
+                print 'Location: https://bugs.debian.org/%d' % no
                 print
         if options.dry_run:
             return
