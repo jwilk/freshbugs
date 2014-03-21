@@ -35,6 +35,12 @@ import cPickle as pickle
 
 import debianbts
 
+debianbts.URL = re.sub('^http://', 'https://', debianbts.URL)
+debianbts.server = debianbts.SOAPpy.SOAPProxy(debianbts.URL, debianbts.NS)
+# XXX Caveat: while debianbts can speak to the BTS over HTTPS, to the best of
+# our knowledge, it does not verify the server's TLS certificate. It's a shame,
+# but it's still better than talking to the BTS over HTTP.
+
 try:
     import elinks
     encoding_error_handler = 'elinks'
