@@ -104,7 +104,7 @@ def fetch_bugs(requests, options):
         try:
             with open(stamp_filename, 'rb') as stamp_file:
                 stamp = pickle.load(stamp_file)
-        except IOError, ex:
+        except IOError as ex:
             if ex.errno == errno.ENOENT:
                 stamp = {}
             else:
