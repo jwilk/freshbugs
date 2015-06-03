@@ -22,6 +22,8 @@
 # TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 # SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+from __future__ import print_function
+
 import argparse
 import datetime
 import errno
@@ -125,18 +127,18 @@ def fetch_bugs(requests, options):
             no = int(bug.bug_num)
             new_stamp[no] = bug.log_modified
             if options.all or bug.log_modified > stamp.get(no, ancient_timestamp):
-                print 'Package: %s' % bug.package
+                print('Package: %s' % bug.package)
                 if bug.originator is not None:
                     submitter_email = bug.originator
                     match = re.search('<(.*)>', submitter_email)
                     if match is not None:
                         submitter_email = match.group(1)
                     if submitter_email != email:
-                        print 'Submitter: %s' % bug.originator.encode(encoding, encoding_error_handler)
-                print 'Subject: %s' % bug.subject.encode(encoding, encoding_error_handler)
-                print 'Date: %s' % bug.log_modified
-                print 'Location: https://bugs.debian.org/%d' % no
-                print
+                        print('Submitter: %s' % bug.originator.encode(encoding, encoding_error_handler))
+                print('Subject: %s' % bug.subject.encode(encoding, encoding_error_handler))
+                print('Date: %s' % bug.log_modified)
+                print('Location: https://bugs.debian.org/%d' % no)
+                print()
         if options.dry_run:
             return
         if not options.clean:
