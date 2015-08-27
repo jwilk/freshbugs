@@ -141,9 +141,9 @@ def fetch_bugs(requests, options):
             merged_stamp = dict(stamp)
             merged_stamp.update(new_stamp)
             new_stamp = merged_stamp
-        with open(stamp_filename + '~', 'wb') as stamp_file:
+        with open(stamp_filename + '.tmp', 'wb') as stamp_file:
             pickle.dump(new_stamp, stamp_file, protocol=-1)
-        os.rename(stamp_filename + '~', stamp_filename)
+        os.rename(stamp_filename + '.tmp', stamp_filename)
 
 class ArgumentParser(argparse.ArgumentParser):
     def __init__(self):
