@@ -67,32 +67,28 @@ class xdg(object):
                 raise
         return path
 
-class file_lock(object):
-    def __init__(self, filename):
-        self._filename = filename + '.lock'
-        self._stale_filename = filename + '.stale-lock'
-        # *.stale-lock should appear in the filesystem only for a short period of time
+class dir_lock(object):
+
+    def __init__(self, path):
+        self._path = path
+        self._fd = None
 
     def __enter__(self):
-        stale_fd = os.open(self._stale_filename, os.O_CREAT | os.O_RDWR | os.O_EXCL, 0o600)
+        if self._fd is not None:
+            raise RuntimeError('{self!r} is already locked'.format(self=self))
+        self._fd = os.open(self._path, os.O_RDONLY)
         try:
-            self._fd = os.open(self._filename, os.O_CREAT | os.O_RDWR | os.O_TRUNC, 0o600)
             fcntl.flock(self._fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
-        finally:
-            os.unlink(self._stale_filename)
-            os.close(stale_fd)
+        except IOError as exc:
+            if exc.errno == errno.EWOULDBLOCK:
+                exc.filename = os.path.abspath(self._path)
+            raise
 
     def __exit__(self, ex_type, ex_value, ex_traceback):
-        stale_fd = os.open(self._stale_filename, os.O_CREAT | os.O_RDWR | os.O_EXCL, 0o600)
-        try:
-            try:
-                os.unlink(self._filename)
-            except IOError:
-                pass
-            os.close(self._fd)
-        finally:
-            os.unlink(self._stale_filename)
-            os.close(stale_fd)
+        if self._fd is None:
+            return
+        os.close(self._fd)
+        os._fd = None
 
 def get_email():
     return os.getenv('REPORTBUGEMAIL') or os.getenv('EMAIL') or os.getenv('DEBEMAIL')
@@ -102,7 +98,7 @@ def fetch_bugs(requests, options):
     basename, ext = os.path.splitext(__file__)
     os.chdir(xdg.save_data_path('freshbugs'))
     stamp_filename = 'freshbugs.stamp'
-    with file_lock(stamp_filename):
+    with dir_lock('.'):
         try:
             with open(stamp_filename, 'rb') as stamp_file:
                 stamp = pickle.load(stamp_file)
