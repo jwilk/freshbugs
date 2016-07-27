@@ -117,7 +117,7 @@ def fetch_bugs(requests, options):
                     bugs_chunk = debianbts.get_bugs(key, request)
                     bugs.update(bugs_chunk)
         bugs = debianbts.get_status(list(bugs))
-        bugs.sort(key = lambda bug: bug.log_modified, reverse=True)
+        bugs.sort(key=(lambda bug: bug.log_modified), reverse=True)
         new_stamp = {}
         ancient_timestamp = datetime.datetime(1900, 1, 1)
         for bug in bugs:
