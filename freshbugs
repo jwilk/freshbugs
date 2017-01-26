@@ -45,6 +45,7 @@ if hasattr(debianbts, 'SOAPpy'):
 try:
     import elinks
     encoding_error_handler = 'elinks'
+    del elinks
 except ImportError:
     encoding_error_handler = 'replace'
 
