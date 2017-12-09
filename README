@@ -1,0 +1,15 @@
+.. code:: console
+
+   $ freshbugs --help
+   usage: freshbugs [-h] [--dry-run] [--clean] [--all] REQUEST [REQUEST ...]
+
+   positional arguments:
+     REQUEST     either a bug number or an e-mail address
+
+   optional arguments:
+     -h, --help  show this help message and exit
+     --dry-run   make cache read-only
+     --clean     remove old items from cache
+     --all       print all selected bugs' details
+
+.. vim:ft=rst ts=3 sts=3 sw=3 et
