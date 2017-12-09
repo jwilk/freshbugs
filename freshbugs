@@ -135,7 +135,7 @@ class ArgumentParser(argparse.ArgumentParser):
         self.add_argument('--dry-run', action='store_true', help='make cache read-only')
         self.add_argument('--clean', action='store_true', help='remove old items from cache')
         self.add_argument('--all', action='store_true', help='print all selected bugs\' details')
-        self.add_argument('request', metavar='<request>', nargs='+', help='either a bug number or an e-mail address')
+        self.add_argument('request', metavar='REQUEST', nargs='+', help='either a bug number or an e-mail address')
 
 def main():
     options = ArgumentParser().parse_args()
