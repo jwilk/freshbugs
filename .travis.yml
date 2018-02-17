@@ -1,0 +1,18 @@
+dist: trusty
+sudo: false
+language: python
+python:
+- "2.6"
+- "2.7"
+install:
+- pybts=python-debianbts
+- if [[ $TRAVIS_PYTHON_VERSION = 2.6 ]]; then pybts="$pybts==1.10 SOAPpy"; fi
+- pip install $pybts
+- pip install unidecode
+- pip install pydiatra pyflakes
+script:
+- ./freshbugs 123456 654321
+- py2diatra .
+- pyflakes .
+
+# vim:ts=2 sts=2 sw=2 et
