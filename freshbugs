@@ -17,6 +17,8 @@ import cPickle as pickle
 
 import debianbts
 
+exec b''  # Python 2.6 or 2.7 is required
+
 if hasattr(debianbts, 'SOAPpy'):
     debianbts.URL = re.sub('^http://', 'https://', debianbts.URL)
     debianbts.server = debianbts.SOAPpy.SOAPProxy(debianbts.URL, debianbts.NS)
