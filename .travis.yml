@@ -8,10 +8,12 @@ before_install:
 - pybts=python-debianbts
 - if [[ $TRAVIS_PYTHON_VERSION = 2.6 ]]; then pybts="$pybts==1.10 SOAPpy"; fi
 - if [[ $TRAVIS_PYTHON_VERSION = 2.6 ]]; then if_rstlint=:; fi
+- pyflakes=pyflakes
+- if [[ $TRAVIS_PYTHON_VERSION = 2.6 ]]; then pyflakes='pyflakes<2'; fi
 install:
 - pip install $pybts
 - pip install unidecode
-- pip install pydiatra pyflakes
+- pip install pydiatra $pyflakes
 - $if_rstlint pip install restructuredtext-lint pygments
 script:
 - ./freshbugs 123456 654321
