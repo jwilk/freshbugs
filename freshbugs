@@ -42,6 +42,9 @@ else:
 
 encoding = locale.getpreferredencoding()
 
+def encode(s):
+    return s.encode(encoding, encoding_error_handler)
+
 class xdg(object):
     '''
     tiny replacement for PyXDG's xdg.BaseDirectory
@@ -123,8 +126,8 @@ def fetch_bugs(requests, options):
                     if match is not None:
                         submitter_email = match.group(1)
                     if submitter_email != email:
-                        print('Submitter: {user}'.format(user=bug.originator.encode(encoding, encoding_error_handler)))
-                print('Subject: {subject}'.format(subject=bug.subject.encode(encoding, encoding_error_handler)))
+                        print('Submitter: {user}'.format(user=encode(bug.originator)))
+                print('Subject: {subject}'.format(subject=encode(bug.subject)))
                 print('Date: {date}'.format(date=bug.log_modified))
                 print('Location: https://bugs.debian.org/{n}'.format(n=no))
                 print()
