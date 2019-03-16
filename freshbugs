@@ -84,7 +84,7 @@ class dir_lock(object):
         if self._fd is None:
             return
         os.close(self._fd)
-        os._fd = None
+        self._fd = None
 
 def get_email():
     return os.getenv('REPORTBUGEMAIL') or os.getenv('EMAIL') or os.getenv('DEBEMAIL')
