@@ -91,7 +91,6 @@ def get_email():
 
 def fetch_bugs(requests, options):
     email = get_email()
-    basename, ext = os.path.splitext(__file__)
     os.chdir(xdg.save_data_path('freshbugs'))
     stamp_filename = 'freshbugs.stamp'
     with dir_lock('.'):
