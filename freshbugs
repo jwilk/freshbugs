@@ -54,8 +54,8 @@ class xdg(object):
         xdg_data_home = os.path.join(os.path.expanduser('~'), '.local', 'share')
 
     @classmethod
-    def save_data_path(xdg, resource):
-        path = os.path.join(xdg.xdg_data_home, resource)
+    def save_data_path(cls, resource):
+        path = os.path.join(cls.xdg_data_home, resource)
         try:
             os.makedirs(path, 0o700)
         except OSError:
