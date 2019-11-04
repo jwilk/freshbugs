@@ -11,6 +11,7 @@ import datetime
 import errno
 import fcntl
 import locale
+import logging
 import os
 import re
 import cPickle as pickle
@@ -150,6 +151,7 @@ class ArgumentParser(argparse.ArgumentParser):
 
 def main():
     options = ArgumentParser().parse_args()
+    logging.basicConfig(level=logging.ERROR)
     fetch_bugs(options.request, options)
 
 if __name__ == '__main__':
