@@ -8,6 +8,7 @@ import argparse
 import datetime
 import errno
 import fcntl
+import inspect
 import json
 import locale
 import logging
@@ -83,6 +84,18 @@ class dir_lock(object):
 def get_email():
     return os.getenv('REPORTBUGEMAIL') or os.getenv('EMAIL') or os.getenv('DEBEMAIL')
 
+def bts_get_bugs(key, value):
+    # • In python-debianbts 2.10, keyword args were added
+    #   and positional args were deprecated:
+    #   https://github.com/venthur/python-debianbts/commit/7ca33c7f902748ce
+    # • In python-debianbts 4.0, positional args were removed:
+    #   https://github.com/venthur/python-debianbts/commit/78a25ba3da2e2ce6
+    argspec = inspect.getfullargspec(debianbts.get_bugs)
+    if argspec.varkw:
+        return debianbts.get_bugs(**{key: value})
+    else:
+        return debianbts.get_bugs(key, value)
+
 def fetch_bugs(requests, options):
     email = get_email()
     os.chdir(xdg.save_data_path('freshbugs'))
@@ -110,7 +123,7 @@ def fetch_bugs(requests, options):
                 bugs.add(int(request, 10))
             except ValueError:
                 for key in 'maint', 'submitter', 'owner', 'correspondent':
-                    bugs_chunk = debianbts.get_bugs(key, request)
+                    bugs_chunk = bts_get_bugs(key, request)
                     bugs.update(bugs_chunk)
         bugs = debianbts.get_status(list(bugs))
         bugs.sort(key=(lambda bug: bug.log_modified), reverse=True)
