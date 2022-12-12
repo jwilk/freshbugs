@@ -40,7 +40,7 @@ sys.stdout.reconfigure(
     errors=encoding_error_handler,
 )
 
-class xdg(object):
+class xdg:
     '''
     tiny replacement for PyXDG's xdg.BaseDirectory
     '''
@@ -58,7 +58,7 @@ class xdg(object):
                 raise
         return path
 
-class dir_lock(object):
+class dir_lock:
 
     def __init__(self, path):
         self._path = path
