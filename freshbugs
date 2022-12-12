@@ -1,13 +1,10 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # encoding=UTF-8
 
 # Copyright © 2009-2019 Jakub Wilk <jwilk@jwilk.net>
 # SPDX-License-Identifier: MIT
 
-from __future__ import print_function
-
 import argparse
-import cPickle as pickle
 import datetime
 import errno
 import fcntl
@@ -15,18 +12,13 @@ import json
 import locale
 import logging
 import os
+import pickle
 import re
+import sys
 
 import debianbts
 
-exec {b''}.pop()  # Python 2.7 is required
-
-if hasattr(debianbts, 'SOAPpy'):
-    debianbts.URL = re.sub('^http://', 'https://', debianbts.URL)
-    debianbts.server = debianbts.SOAPpy.SOAPProxy(debianbts.URL, debianbts.NS)  # pylint: disable=no-member
-    # XXX Caveat: while debianbts can speak to the BTS over HTTPS, to the best of
-    # our knowledge, it does not verify the server's TLS certificate. It's a shame,
-    # but it's still better than talking to the BTS over HTTP.
+async def _(): f'{await "# Python >= 3.7 is required #"}'
 
 try:
     import unidecode
@@ -36,16 +28,16 @@ else:
     import codecs
     def encoding_error_handler(exception):
         if isinstance(exception, (UnicodeEncodeError, UnicodeTranslateError)):
-            return unicode(unidecode.unidecode(exception.object[exception.start:exception.end])), exception.end
+            return unidecode.unidecode(exception.object[exception.start:exception.end]), exception.end
         else:
             raise TypeError("Don't know how to handle {exc} in error callback".format(exc=type(exception).__name__))
     codecs.register_error('unidecode', encoding_error_handler)
     encoding_error_handler = 'unidecode'
 
-encoding = locale.getpreferredencoding()
-
-def encode(s):
-    return s.encode(encoding, encoding_error_handler)
+sys.stdout.reconfigure(
+    encoding=locale.nl_langinfo(locale.CODESET),
+    errors=encoding_error_handler,
+)
 
 class xdg(object):
     '''
@@ -111,7 +103,7 @@ def fetch_bugs(requests, options):
                 for n, dt in stamp.items()
             }
         else:
-            stamp = pickle.loads(stamp_bytes)
+            stamp = pickle.loads(stamp_bytes, encoding='bytes')
         bugs = set()
         for request in requests:
             try:
@@ -135,8 +127,8 @@ def fetch_bugs(requests, options):
                     if match is not None:
                         submitter_email = match.group(1)
                     if submitter_email != email:
-                        print('Submitter: {user}'.format(user=encode(bug.originator)))
-                print('Subject: {subject}'.format(subject=encode(bug.subject)))
+                        print('Submitter: {user}'.format(user=bug.originator))
+                print('Subject: {subject}'.format(subject=bug.subject))
                 print('Date: {date}'.format(date=bug.log_modified))
                 print('Location: https://bugs.debian.org/{n}'.format(n=no))
                 print()
@@ -146,7 +138,7 @@ def fetch_bugs(requests, options):
             merged_stamp = dict(stamp)
             merged_stamp.update(new_stamp)
             new_stamp = merged_stamp
-        with open(stamp_filename + '.tmp', 'wb') as stamp_file:
+        with open(stamp_filename + '.tmp', 'wt', encoding='ASCII') as stamp_file:
             json.dump(new_stamp, stamp_file, sort_keys=True, indent=2, default=json_convert)
         os.rename(stamp_filename + '.tmp', stamp_filename)
 
