@@ -18,7 +18,7 @@ import re
 
 import debianbts
 
-exec b''  # Python 2.6 or 2.7 is required
+exec {b''}.pop()  # Python 2.7 is required
 
 if hasattr(debianbts, 'SOAPpy'):
     debianbts.URL = re.sub('^http://', 'https://', debianbts.URL)
