@@ -9,6 +9,7 @@ jobs:
         include:
         - python: '3.7'
           os: ubuntu-20.04
+          debianbts: python-debianbts==2.5.2
         - python: '3.8'
           os: ubuntu-20.04
         - python: '3.9'
@@ -27,8 +28,12 @@ jobs:
       with:
         python-version: ${{matrix.python}}
     - name: install deps
+      env:
+        debianbts: ${{matrix.debianbts || 'python-debianbts'}}
       run: |
-        python3 -m pip install python-debianbts unidecode
+        python3 -m pip install pysimplesoap
+        python3 -m pip install ${{env.debianbts}}
+        python3 -m pip install unidecode
     - name: smoke test
       run: |
         ./freshbugs 123456 654321 nobody@example.org
