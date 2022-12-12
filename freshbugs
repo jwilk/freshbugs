@@ -11,6 +11,7 @@ import cPickle as pickle
 import datetime
 import errno
 import fcntl
+import json
 import locale
 import logging
 import os
@@ -97,12 +98,20 @@ def fetch_bugs(requests, options):
     with dir_lock('.'):
         try:
             with open(stamp_filename, 'rb') as stamp_file:
-                stamp = pickle.load(stamp_file)
+                stamp_bytes = stamp_file.read()
         except IOError as ex:
             if ex.errno == errno.ENOENT:
-                stamp = {}
+                stamp_bytes = b'{}'
             else:
                 raise
+        if stamp_bytes[:1] == b'{':
+            stamp = json.loads(stamp_bytes)
+            stamp = {
+                int(n): datetime.datetime.strptime(dt, '%Y-%m-%dT%H:%M:%S')
+                for n, dt in stamp.items()
+            }
+        else:
+            stamp = pickle.loads(stamp_bytes)
         bugs = set()
         for request in requests:
             try:
@@ -138,8 +147,13 @@ def fetch_bugs(requests, options):
             merged_stamp.update(new_stamp)
             new_stamp = merged_stamp
         with open(stamp_filename + '.tmp', 'wb') as stamp_file:
-            pickle.dump(new_stamp, stamp_file, protocol=-1)
+            json.dump(new_stamp, stamp_file, sort_keys=True, indent=2, default=json_convert)
         os.rename(stamp_filename + '.tmp', stamp_filename)
+
+def json_convert(obj):
+    if isinstance(obj, datetime.datetime):
+        return obj.isoformat()
+    raise TypeError
 
 class ArgumentParser(argparse.ArgumentParser):
     def __init__(self):
