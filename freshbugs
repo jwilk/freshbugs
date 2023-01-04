@@ -119,9 +119,9 @@ def fetch_bugs(requests, options):
             stamp = pickle.loads(stamp_bytes, encoding='bytes')
         bugs = set()
         for request in requests:
-            try:
+            if request.isdigit():
                 bugs.add(int(request, 10))
-            except ValueError:
+            else:
                 for key in 'maint', 'submitter', 'owner', 'correspondent':
                     bugs_chunk = bts_get_bugs(key, request)
                     bugs.update(bugs_chunk)
