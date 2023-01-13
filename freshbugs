@@ -170,7 +170,7 @@ class ArgumentParser(argparse.ArgumentParser):
 
 def main():
     options = ArgumentParser().parse_args()
-    logging.basicConfig(level=logging.ERROR)
+    logging.basicConfig(level=logging.CRITICAL)
     fetch_bugs(options.request, options)
 
 if __name__ == '__main__':
