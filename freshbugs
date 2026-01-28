@@ -41,7 +41,9 @@ sys.stdout.reconfigure(
 )
 
 debbugs_host = 'bugs.debian.org'
-debianbts.set_soap_location(f'https://{debbugs_host}/cgi-bin/soap.cgi')
+debbugs_url = f'https://{debbugs_host}/cgi-bin/soap.cgi'
+if debianbts.URL != debbugs_url:
+    debianbts.set_soap_location(debbugs_url)
 
 def makedirs700(path):
     # TODO: Get rid of this function once
