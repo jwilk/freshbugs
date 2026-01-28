@@ -40,6 +40,9 @@ sys.stdout.reconfigure(
     errors=encoding_error_handler,
 )
 
+debbugs_host = 'bugs.debian.org'
+debianbts.set_soap_location(f'https://{debbugs_host}/cgi-bin/soap.cgi')
+
 def makedirs700(path):
     # TODO: Get rid of this function once
     # https://github.com/python/cpython/issues/86533
