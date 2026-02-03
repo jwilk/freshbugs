@@ -180,6 +180,7 @@ def json_convert(obj):
 class ArgumentParser(argparse.ArgumentParser):
     def __init__(self):
         argparse.ArgumentParser.__init__(self)
+        self.color = False
         self.add_argument('--dry-run', action='store_true', help='make cache read-only')
         self.add_argument('--clean', action='store_true', help='remove old items from cache')
         self.add_argument('--all', action='store_true', help='print all selected bugs\' details')
